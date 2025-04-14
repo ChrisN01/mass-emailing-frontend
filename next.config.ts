@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
+import API from "@/config";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  env:
+      {
+          API:API,
+      }
+  
 };
 
 export default nextConfig;

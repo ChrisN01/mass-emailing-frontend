@@ -2,6 +2,7 @@
 
 import TopNav from "@/components/TopNav";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export default function RootLayout({
@@ -15,6 +16,7 @@ export default function RootLayout({
         <body>
         
           <TopNav />
+          <Toaster />
           {children}
         </body>
       </SessionProvider>
