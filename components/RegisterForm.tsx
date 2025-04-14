@@ -11,7 +11,6 @@ export default function RegisterForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState<{ email?: string[] }>({});
 
     const router = useRouter();
 
@@ -35,7 +34,6 @@ export default function RegisterForm() {
          
             if (!response.ok) {
                 if (data.errors) {
-                    setErrors(data.errors);
                     if (data.errors.email) {
                         toast.error(data.errors.email.join(" "));
                     }
