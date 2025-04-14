@@ -32,26 +32,39 @@ export default function RegisterForm() {
                 })
             });
             const data = await response.json();
-            //TODO: handle errors properly
-            if (data.errors?.email) {
-                setErrors(data.errors);
-                toast.error(data.errors.email.join(" "));
+         
+            if (!response.ok) {
+                if (data.errors) {
+                    setErrors(data.errors);
+                    if (data.errors.email) {
+                        toast.error(data.errors.email.join(" "));
+                    }
+                    if (data.errors.name) {
+                        toast.error(data.errors.name.join(" "));
+                    }
+                    if (data.errors.password) {
+                        toast.error(data.errors.password.join(" "));
+                    }
+                } else {
+                    toast.error(data.message || "An error occurred. Please try again.");
+                }
+                setLoading(false);
+                return;
             }
-            else{
-                toast.success('Registration successful!');
-                setName("");
-                setEmail("");
-                setPassword("");
-                router.push("/login");
-            }
+
+            toast.success('Registration successful!');
+            setName("");
+            setEmail("");
+            setPassword("");
+            router.push("/login");
 
 
 
             
         } catch (error) {
-
-            setLoading(false);
             console.log('ERROR: ',error);
+            toast.error("An unexpected error occurred. Please try again.");
+            setLoading(false);
             
         }
     };
