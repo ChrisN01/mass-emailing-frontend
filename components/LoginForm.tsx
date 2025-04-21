@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useRouter} from "next/navigation";
 
 
 export default function LoginForm() {
@@ -14,9 +13,6 @@ export default function LoginForm() {
 
     const router = useRouter();
 
-    const searchParams= useSearchParams();
-    const callbackUrl= searchParams.get("callbackUrl") || '/';
-
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
@@ -24,30 +20,45 @@ export default function LoginForm() {
         
         try {
             setLoading(true);
-            
-            const result = await signIn('credentials', {
-                redirect:false,
-                email,
-                password
+
+            const response = await fetch(`${process.env.API}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body:JSON.stringify({
+                    email,password,
+                })
             });
-            if(result?.error)
-            {
-                toast.error(result.error);
+            const data = await response.json();
+         
+            if (!response.ok) {
+                if (data.errors) {
+                    if (data.errors.email) {
+                        toast.error(data.errors.email.join(" "));
+                    }
+                    if (data.errors.password) {
+                        toast.error(data.errors.password.join(" "));
+                    }
+                } else {
+                    toast.error(data.message || "An error occurred. Please try again.");
+                }
                 setLoading(false);
+                return;
             }
-            else{
-                toast.success('Logged in successfully');
-                //router.push('/');
-
-                router.push(callbackUrl);
-
-            }
+            
+            sessionStorage.setItem("access_token", data.access_token);
+            toast.success('Logged in successfully');
+            router.push("/dashboard/user");
+            setEmail("");
+            setPassword("");
 
             
         } catch (error) {
 
             setLoading(false);
             console.log(error);
+            toast.error("An unexpected error occurred. Please try again.");           
             
         }
     };
